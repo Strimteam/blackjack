@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<QGen-project version="4.0.0 beta 1">
+  <Structure>
+    <Location name="start"/>
+    <Location name="start0"/>
+    <Location name="start1"/>
+    <Folder name="Gam2">
+      <Location name="play"/>
+      <Location name="play2"/>
+      <Location name="mn"/>
+      <Location name="mth"/>
+      <Location name="mplay"/>
+      <Location name="pointsmatch"/>
+      <Location name="transition"/>
+      <Location name="dealercheck"/>
+      <Location name="dealerone"/>
+      <Location name="finalcheck"/>
+      <Location name="draw"/>
+      <Location name="lost"/>
+      <Location name="win"/>
+      <Location name="finalend"/>
+    </Folder>
+  </Structure>
+</QGen-project>
