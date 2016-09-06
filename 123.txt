@@ -1,4 +1,4 @@
-﻿-- start
+﻿#start
 usehtml = 1
 showinput 0
 showobjs 0
