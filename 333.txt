@@ -79,8 +79,8 @@
 	'- Added pictures'
 	'- Changed terms'
 	'- Added English'
-	your_bank = 500
-	hi_bank = 500
+	your_bank = 1000
+	hi_bank = 999
 	
 	
 	act 'Start Game':
