@@ -1,0 +1,650 @@
+﻿# start
+usehtml = 1
+showinput 0
+showobjs 0
+showstat 0
+'<center><img src = "/pic/logo.png">'
+''
+'<h5>Выберите язык | Please choose your language</h5></center>'
+' '
+''
+$start0 = 'start0'
+$start1 = 'start1'
+'<center><table><tr><td><a href = "exec:gt $start0"><img src = "/pic/russia.gif"></a></td><td></td><td><a href = "exec:gt $start1"><img src = "/pic/gb.gif"></a></td></tr></table></center>'
+
+
+act '<b>Русский</b>': gt 'start0'
+
+act '<b>English</b>': gt 'start1'
+
+--- start ---------------------------------
+
+# start0
+killall
+usehtml = 1
+showstat 0
+showinput 0
+showobjs 0
+
+lang = 1
+'<center>'
+'<img src = "/pic/logo.png">'
+'<h5>Студия ivsgames представляет:</h5>'
+' '
+'<h6>Игра "Блек Джек" версия 0.02</h6></center>'
+' '
+' '
+'Изменения в версии 0.02:'
+'- Добавлены картинки'
+'- Исправлены термины'
+'- Добавлен английский'
+your_bank = 5500
+hi_bank = 6500
+
+
+
+act 'Начать': 
+	showstat 1
+	gt 'play'
+end
+--- start0 ---------------------------------
+
+# start1
+killall
+usehtml = 1
+showstat 0
+showinput 0
+showobjs 0
+
+lang = 2
+'<center>'
+'<img src = "/pic/logo.png">'
+'<h5>ivsgames studio presents:</h5>'
+' '
+'<h6>Black Jack porno cards version 0.02</h6></center>'
+' '
+' '
+'Changes and additions in version 0.02:'
+'- Added pictures'
+'- Changed terms'
+'- Added English'
+your_bank = 1500
+hi_bank = 2500
+
+
+act 'Start Game':
+	showstat 1
+	gt 'play'
+end
+--- start1 ---------------------------------
+
+# play
+coin = 1
+your_bank-=coin
+hi_bank-=coin
+bank += 2*coin
+blj = 0
+
+i=-1
+:ju000
+	i+=1
+	cr[i] = i
+if i < 51: jump 'ju000'
+i = -1
+:ju000b
+	i+=1
+	x = arrsize('cr')-2
+	if x < 0: x = 0
+		j = rand (0,arrsize('cr')-2)
+		col[i] = cr[j]
+		killvar 'cr',j
+if i < 51 : jump 'ju000b'
+if lang = 1: $next = 'Далее' else: $next = 'Next'
+gt 'play2'
+--- play ---------------------------------
+
+# play2
+!Имеем тасованую колоду: col[i]
+set step = 0
+dealer[0]= col[1]
+dealer[1]= col[3]
+de = 2
+you[0] = col[0]
+you[1] = col[2]
+yo = 2
+gs 'mth'
+
+killvar 'col',0
+killvar 'col',0
+killvar 'col',0
+killvar 'col',0
+
+
+!проверка дилер 21
+if lang = 1:
+	if dealer_tot = 21:
+		if you_tot = 21:
+			msg "У дилера и у вас <b>Black Jack</b>"
+			gt 'draw'
+		elseif you_tot <> 21:
+			msg "У дилера <b>Black Jack</b>"
+			gt 'lost'
+		end
+	end
+elseif lang = 2:
+	if dealer_tot = 21:
+		if you_tot = 21:
+			msg "The Dealer and you both got <b>Black Jack</b>"
+			gt 'draw'
+		elseif you_tot <> 21:
+			msg "The Dealer got <b>Black Jack</b>"
+			gt 'lost'
+		end
+	end
+end
+
+gt 'mplay'
+
+
+--- play2 ---------------------------------
+
+# mn
+cls
+if lang = 1:
+	pl '<b>Банк: </b><<bank>>'
+	pl ''
+	pl '<b>Вы:</b>'
+	pl '<<your_bank>>'
+	pl '<b>Оппонент:</b>'
+	pl '<<hi_bank>>'
+	pl ''
+	$play = 'play'
+	pl '<a href = "exec:gt $play">Сдаюсь</a>'
+elseif lang = 2:
+	pl '<b>Bank:</b><<bank>>'
+	pl ''
+	pl '<b>You:</b>'
+	pl '<<your_bank>>'
+	pl '<b>Opponent:</b>'
+	pl '<<hi_bank>>'
+	pl ''
+	$play = 'play'
+	pl '<a href = "exec:gt $play">Give Up this turn</a>'
+end
+
+if lang = 1 and your_bank <= 0: 
+	$results = 'поражением'
+	gt 'finalend'
+elseif lang = 1 and hi_bank <= 0:
+	$results = 'ПОБЕДОЙ!'
+	gt 'finalend'
+elseif lang = 2 and your_bank <= 0: 
+	$results = 'with the lost'
+	gt 'finalend' 
+elseif lang = 1 and hi_bank <= 0:
+	$results = 'with WIN!'
+	gt 'finalend'
+end
+--- mn ---------------------------------
+
+# mth
+i = -1
+dealer_tot = 0
+:fjno
+	i+=1
+	dealer_val[i] = func('pointsmatch',dealer[i],0)
+	dealer_tot += dealer_val[i]	
+if i < arrsize('dealer') - 1: jump 'fjno'
+i = -1
+if dealer_tot > 21:
+	dealer_tot = 0
+	:fjnq
+	i+=1
+	dealer_val[i] = func('pointsmatch',dealer[i],1)
+	dealer_tot += dealer_val[i]	
+	if i < arrsize('dealer') - 1: jump 'fjnq'
+end
+
+
+j = -1
+you_tot = 0
+:fwno
+	j+=1
+	you_val[j] = func('pointsmatch',you[j],0)
+	you_tot += you_val[j]
+if j < arrsize('you') - 1: jump 'fwno'
+j = -1
+if you_tot > 21:
+	you_tot = 0
+	:fjnz
+	j+=1
+	you_val[j] = func('pointsmatch',you[j],1)
+	you_tot += you_val[j]	
+	if j < arrsize('you') - 1: jump 'fjnz'
+end
+--- mth ---------------------------------
+
+# mplay
+step+=1
+
+gs 'mn'
+gs 'mth'
+
+''
+if lang = 1: '<b>Ваша рука:</b>' else: '<b>Your Hand</b>'
+i=-1
+:juwz
+	i+=1
+	$yup[i] = func('transition',you[i])
+	*P'<img height="250" src = "<<$yup[i]>>"> '
+if i < arrsize('you')-1: jump 'juwz'
+!if lang = 1: 'Сумма: <<you_tot>>' else: 'Total Amount: <<you_tot>>'
+''
+if lang = 1:'<b>Рука Дилера:</b>' else: "<b>Dealer's Hand</b>"
+i=-1
+:juww
+	i+=1
+	$dup[i] = func('transition',dealer[i])
+	if i = 0: 
+		*P'<img height="250" src = "<<$dup[i]>>">' 
+	else: 
+		*P'<img height="250" src = "/pic/main.jpg">'
+	end
+if i < arrsize('dealer')-1: jump 'juww'
+	!'<<dealer_tot>>'
+
+if you_tot > 21:
+	if lang = 1: msg "Перебор" else: msg "Going Bust"
+	gt 'lost'
+elseif you_tot = 21 and step = 1:
+	if dealer_val[0] >= 10:
+		' '
+		if lang = 1: 
+			'У вас Black Jack, но у дилера тоже может быть Black Jack!!'
+			'Выберите действие:'
+			act 'Взять выйгрышь x1':
+				wint = 10
+				gt 'win'
+			end
+			act 'Рискнуть и дать дилеру набрать':
+				gt 'dealercheck'
+			end	
+		elseif lang = 2:
+			'You have Black Jack, but the dealer can match!'
+			'Choose your action:'
+			act 'Took your chips (x1)':
+				wint = 10
+				gt 'win'
+			end
+			act 'To risk and alow the dealer to hit (x2)':
+				gt 'dealercheck'
+			end
+		end
+	elseif dealer_val[0] < 10:
+		wint = 15
+		gt 'win'
+	end
+elseif you_tot = 21 and step > 1:
+	if lang = 1:
+		' '
+		'У вас 21 очко'
+		act 'Стою!':
+			gt 'finalcheck'
+		end
+	elseif lang = 2:
+		' '
+		'You have 21!'
+		act 'Stand!':
+			gt 'finalcheck'
+		end
+	end
+elseif you_tot < 21:
+	if lang = 1: $hit = 'Хит!'& $stand = 'Стоп!' else: $hit = 'Hit!'& $stand = 'Stand!'
+	act $hit:
+		you[yo]= col[0]
+		killvar 'col',0
+		gs 'mth'
+		yo+=1
+		gs 'dealerone'
+		gt 'mplay'
+	end
+	act $stand:
+		gt 'finalcheck'
+	end
+end
+--- mplay ---------------------------------
+
+# pointsmatch
+if args[1] = 0:
+	if args[0] = 0: result = 11
+	if args[0] = 1: result = 11
+	if args[0] = 2: result = 11
+	if args[0] = 3: result = 11
+elseif args[1] = 1:
+	if args[0] = 0: result = 1
+	if args[0] = 1: result = 1
+	if args[0] = 2: result = 1
+	if args[0] = 3: result = 1
+end
+if args[0] = 4: result = 2
+if args[0] = 5: result = 2
+if args[0] = 6: result = 2
+if args[0] = 7: result = 2
+if args[0] = 8: result = 3
+if args[0] = 9: result = 3
+if args[0] = 10: result = 3
+if args[0] = 11: result = 3
+if args[0] = 12: result = 4
+if args[0] = 13: result = 4
+if args[0] = 14: result = 4
+if args[0] = 15: result = 4
+if args[0] = 16: result = 5
+if args[0] = 17: result = 5
+if args[0] = 18: result = 5
+if args[0] = 19: result = 5
+if args[0] = 20: result = 6
+if args[0] = 21: result = 6
+if args[0] = 22: result = 6
+if args[0] = 23: result = 6
+if args[0] = 24: result = 7
+if args[0] = 25: result = 7
+if args[0] = 26: result = 7
+if args[0] = 27: result = 7
+if args[0] = 28: result = 8
+if args[0] = 29: result = 8
+if args[0] = 30: result = 8
+if args[0] = 31: result = 8
+if args[0] = 32: result = 9
+if args[0] = 33: result = 9
+if args[0] = 34: result = 9
+if args[0] = 35: result = 9
+if args[0] = 36: result = 10
+if args[0] = 37: result = 10
+if args[0] = 38: result = 10
+if args[0] = 39: result = 10
+if args[0] = 40: result = 10
+if args[0] = 41: result = 10
+if args[0] = 42: result = 10
+if args[0] = 43: result = 10
+if args[0] = 44: result = 10
+if args[0] = 45: result = 10
+if args[0] = 46: result = 10
+if args[0] = 47: result = 10
+if args[0] = 48: result = 10
+if args[0] = 49: result = 10
+if args[0] = 50: result = 10
+if args[0] = 51: result = 10
+
+--- pointsmatch ---------------------------------
+
+# transition
+if args[0] = 0: $result = '/pic/Ab.jpg'
+if args[0] = 1: $result = '/pic/Ap.jpg'
+if args[0] = 2: $result = '/pic/Ak.jpg'
+if args[0] = 3: $result = '/pic/Ac.jpg'
+if args[0] = 4: $result = '/pic/2b.jpg'
+if args[0] = 5: $result = '/pic/2p.jpg'
+if args[0] = 6: $result = '/pic/2k.jpg'
+if args[0] = 7: $result = '/pic/2c.jpg'
+if args[0] = 8: $result = '/pic/3b.jpg'
+if args[0] = 9: $result = '/pic/3p.jpg'
+if args[0] = 10: $result = '/pic/3k.jpg'
+if args[0] = 11: $result = '/pic/3c.jpg'
+if args[0] = 12: $result = '/pic/4b.jpg'
+if args[0] = 13: $result = '/pic/4p.jpg'
+if args[0] = 14: $result = '/pic/4k.jpg'
+if args[0] = 15: $result = '/pic/4c.jpg'
+if args[0] = 16: $result = '/pic/5b.jpg'
+if args[0] = 17: $result = '/pic/5p.jpg'
+if args[0] = 18: $result = '/pic/5k.jpg'
+if args[0] = 19: $result = '/pic/5c.jpg'
+if args[0] = 20: $result = '/pic/6b.jpg'
+if args[0] = 21: $result = '/pic/6p.jpg'
+if args[0] = 22: $result = '/pic/6k.jpg'
+if args[0] = 23: $result = '/pic/6c.jpg'
+if args[0] = 24: $result = '/pic/7b.jpg'
+if args[0] = 25: $result = '/pic/7p.jpg'
+if args[0] = 26: $result = '/pic/7k.jpg'
+if args[0] = 27: $result = '/pic/7c.jpg'
+if args[0] = 28: $result = '/pic/8b.jpg'
+if args[0] = 29: $result = '/pic/8c.jpg'
+if args[0] = 30: $result = '/pic/8k.jpg'
+if args[0] = 31: $result = '/pic/8p.jpg'
+if args[0] = 32: $result = '/pic/9b.jpg'
+if args[0] = 33: $result = '/pic/9p.jpg'
+if args[0] = 34: $result = '/pic/9k.jpg'
+if args[0] = 35: $result = '/pic/9c.jpg'
+if args[0] = 36: $result = '/pic/10b.jpg'
+if args[0] = 37: $result = '/pic/10p.jpg'
+if args[0] = 38: $result = '/pic/10k.jpg'
+if args[0] = 39: $result = '/pic/10c.jpg'
+if args[0] = 40: $result = '/pic/Jb.jpg'
+if args[0] = 41: $result = '/pic/Jp.jpg'
+if args[0] = 42: $result = '/pic/Jk.jpg'
+if args[0] = 43: $result = '/pic/Jc.jpg'
+if args[0] = 44: $result = '/pic/Qb.jpg'
+if args[0] = 45: $result = '/pic/Qp.jpg'
+if args[0] = 46: $result = '/pic/Qk.jpg'
+if args[0] = 47: $result = '/pic/Qc.jpg'
+if args[0] = 48: $result = '/pic/Kb.jpg'
+if args[0] = 49: $result = '/pic/Kp.jpg'
+if args[0] = 50: $result = '/pic/Kk.jpg'
+if args[0] = 51: $result = '/pic/Kc.jpg'
+
+--- transition ---------------------------------
+
+# dealercheck
+gs 'mn'
+gs 'mth'
+'dealer_tot <<dealer_tot>>'
+:ju010
+if dealer_tot <= 17:
+	dealer[de]= col[0]
+	killvar 'col',0
+	gs 'mth'
+   	de += 1
+	if dealer_tot <= 17: jump 'ju010'
+end
+
+
+
+if dealer_tot < 21:
+	wint = 15
+	gt 'win'
+elseif dealer_tot > 21:
+	if lang = 1: msg "У дилера перебор!" else: msg "The dealer got burst!"
+	wint = 15
+	gt 'win'
+elseif dealer_tot = 21:
+	gt 'draw'
+end
+--- dealercheck ---------------------------------
+
+# dealerone
+gs 'mth'
+
+if dealer_tot <= 17:
+	dealer[de]= col[0]
+	killvar 'col',0
+	gs 'mth'
+   	de += 1
+end
+--- dealerone ---------------------------------
+
+# finalcheck
+!dealer_tot
+!you_tot
+gs 'mth'
+
+if dealer_tot > 21:
+	wint = 10
+	gt 'win'
+end
+
+if dealer_tot > you_tot:
+	gt 'lost'
+elseif dealer_tot = you_tot:
+	gt 'draw'
+elseif (dealer_tot < you_tot) and (dealer_tot >= 17):
+	wint = 10
+	gt 'win'
+end
+
+:ju014
+if dealer_tot < 17 and dealer_tot < you_tot:
+	dealer[de]= col[0]
+	killvar 'col',0
+	gs 'mth'	
+	de += 1
+	if dealer_tot <= 17:  jump 'ju014'
+	if dealer_tot <= 21 and dealer_tot > you_tot: gt 'lost'
+end
+
+gs 'mth'
+
+if dealer_tot > 21:
+	wint = 10
+	gt 'win'
+elseif dealer_tot <= 21 and dealer_tot > you_tot:
+	gt 'lost'
+end
+
+
+if dealer_tot < you_tot: 
+	wint = 10
+	gt 'win'
+elseif dealer_tot = you_tot:
+	gt 'draw'
+elseif: dealer_tot > you_tot:
+	gt 'lost'
+end
+--- finalcheck ---------------------------------
+
+# draw
+gs 'mn'
+if lang = 1:'<center><h5>НИЧЬЯ</center></h5>' else:'<center><h5>MATCH</center></h5>'
+
+'<table width="100%"><tr>'
+if lang = 1:'<td width="550" align = "top"><b>Ваши карты:</b>' else:'<td width="550" align = "top"><b>Your Hand</b>'
+
+i=-1
+:juwz
+	i+=1
+	$yup[i] = func('transition',you[i])
+	*P'<img height = "250" src = "<<$yup[i]>>">'
+if i < arrsize('you')-1: jump 'juwz'
+*nl
+	if land = 1: 'Сумма: <<you_tot>></td><td></td>' else 'Total Amount: <<you_tot>></td><td></td>' 
+*nl
+if lang = 1:'<td><b>Оппонент:</b>' else:'<td><b>Opponent</b>'
+i=-1
+:juww
+	i+=1
+	$dup[i] = func('transition',dealer[i])
+	*P'<img height = "250" src = "<<$dup[i]>>">'
+if i < arrsize('dealer')-1: jump 'juww'
+*nl
+    if lang = 1:'Сумма: <<dealer_tot>></td></tr></table>' else: 'Total: <<dealer_tot>></td></tr></table>'
+
+
+act $next: 
+	killvar 'dealer'
+	killvar 'you'
+	killvar '$yup'
+	killvar '$dup'
+	killvar 'col'
+	killvar 'cr'
+	gt 'play'
+end
+--- draw ---------------------------------
+
+# lost
+gs 'mn'
+if lang = 1: '<center><h5>ВЫ ПРОИГРАЛИ</h5></center>' else: '<center><h5>YOU HAVE LOST</center></h5>'
+
+'<table width="100%" align = "top"><tr>'
+if lang = 1: '<td width="550" align = "top"><b>Ваши карты:</b>' else: '<td width="550" align = "top"><b>Your Hand:</b>'
+
+i=-1
+:juwz
+	i+=1
+	$yup[i] = func('transition',you[i])
+	*P'<img height = "250" src = "<<$yup[i]>>">'
+if i < arrsize('you')-1: jump 'juwz'
+*nl
+	if lang = 1: 'Сумма: <<you_tot>></td><td></td>' else 'Total Amount: <<you_tot>></td><td></td>' 
+*nl
+if lang = 1: '<td align = "top"><b>Оппонент:</b>' else: '<td align = "top"><b>Opponent</b>'
+i=-1
+:juww
+	i+=1
+	$dup[i] = func('transition',dealer[i])
+	*P'<img height = "250" src = "<<$dup[i]>>">'
+if i < arrsize('dealer')-1: jump 'juww'
+*nl
+if lang = 1: 'Сумма: <<dealer_tot>></td></tr></table>' else 'Total Amount: <<dealer_tot>></td></tr></table>' 
+
+
+hi_bank += bank
+bank = 0
+act $next: 
+	killvar 'dealer'
+	killvar 'you'
+	killvar '$yup'
+	killvar '$dup'
+	killvar 'col'
+	killvar 'cr'
+	gt 'play'
+end
+--- lost ---------------------------------
+
+# win
+gs 'mn'
+if wint = 10:
+	if lang = 1: '<center><h5>ВЫ ВЫИГРАЛИ <<bank>> монеты</center></h5>' else: '<center><h5>YOU HAVE WON <<bank>> chips</center></h5>'
+	your_bank+=bank
+elseif wint = 15:
+	nbank = bank*15/10
+	your_bank+=nbank
+	hi_bank-=nbank-bank
+	if lang = 1: '<center><h5>ВЫ ВЫИГРАЛИ <<nbank>></center></h5>' else: '<center><h5>YOU HAVE WON <<nbank>> chips</center></h5>'
+end
+'<table width="100%"><tr>'
+if lang = 1: '<td width="550" align = "top"><b>Ваши карты:</b>' else: '<td width="550" align = "top"><b>Your Hand:</b>'
+i=-1
+:juwz1
+	i+=1
+	$yup[i] = func('transition',you[i])
+	*P'<img height = "250" src = "<<$yup[i]>>">'
+if i < arrsize('you')-1: jump 'juwz1'
+*nl
+	if lang = 1: 'Сумма: <<you_tot>></td><td></td>' else: 'Total Amount: <<you_tot>></td><td></td>'
+*nl
+	if lang = 1: '<td><b>Карты оппонента</b>:' else: "<td><b>Opponent's Hand</b>:"
+i=-1
+:juww
+	i+=1
+	$dup[i] = func('transition',dealer[i])
+	*P'<img height = "250" src = "<<$dup[i]>>">'
+if i < arrsize('dealer')-1: jump 'juww'
+*nl
+if lang = 1: 'Сумма: <<dealer_tot>></td></tr></table>' else 'Total Amount: <<dealer_tot>></td></tr></table>' 
+
+act $next:
+	bank = 0
+	nbank = 0
+	killvar 'dealer'
+	killvar 'you'
+	killvar '$yup'
+	killvar '$dup'
+	killvar 'col'
+	killvar 'cr'
+	gt 'play'
+end
+--- win ---------------------------------
+
+# finalend
+if lang = 1: 'Вы закончили игру <<$results>>!' else: 'You have finished the game <<$results>>!' 
+*P'<center> <img height = "250" src = "/pic/joker1.jpg"> <img width = "250" src = "/pic/joker2.jpg"></center>'
+--- finalend ---------------------------------
+
